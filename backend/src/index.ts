@@ -1,7 +1,6 @@
 import { Hono } from 'hono'
 import { mainRouter } from './router/mainRouter';
-import { SigninType, SignupType } from './validationSchema';
-import { db } from './middlewares/db';
+import {SigninType, SignupType} from "@100xbensomnitrix/medium-common-bundle";
 
 const app = new Hono<{
   Bindings:{

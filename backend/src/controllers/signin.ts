@@ -1,5 +1,4 @@
 import { Context } from "hono";
-import { SigninType, SignupType } from "../validationSchema";
 import { sign } from "hono/jwt";
 import { HTTPStatusCode } from "../statusCodes";
 import bcrypt from "bcryptjs";

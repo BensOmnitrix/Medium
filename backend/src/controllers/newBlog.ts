@@ -2,12 +2,7 @@ import { Context } from "hono";
 import { HTTPStatusCode } from "../statusCodes";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { PrismaClient } from "../generated/prisma/edge";
-
-export interface Blog {
-    title: string;
-    content: string;
-    published: boolean;
-}
+import { createPostSchema, CreatePostType } from "@100xbensomnitrix/medium-common-bundle";
 
 export const newBlog = async (c: Context) => {
     try{
@@ -15,17 +10,22 @@ export const newBlog = async (c: Context) => {
             datasourceUrl: c.env.DATABASE_URL,
         }).$extends(withAccelerate());
         const id = c.get("jwtPayload").id;
-        const data: Blog = await c.req.json();
+        const data: CreatePostType = await c.req.json();
 
-        const title = data.title;
-        const content = data.content;
-        const published = data.published;
+        const blogParams = createPostSchema.safeParse(data);
+        if(!blogParams.success){
+            return c.json({
+                message: blogParams.error.flatten()
+            },HTTPStatusCode.BAD_REQUEST);
+        }
+
+        const title = blogParams.data.title;
+        const content = blogParams.data.content;
 
         const createBlog = await prisma.post.create({
             data:{
                 title,
                 content,
-                published,
                 authorId: id
             },
             select: {

@@ -1,10 +1,10 @@
 import { Context } from "hono";
-import { SignupType } from "../validationSchema";
 import { sign } from "hono/jwt";
 import { HTTPStatusCode } from "../statusCodes";
 import bcrypt from "bcryptjs";
 import { PrismaClient } from "../generated/prisma/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
+import { SignupType } from "@100xbensomnitrix/medium-common-bundle";
 
 export const signup = async (c: Context) => {
     try{

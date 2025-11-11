@@ -1,10 +1,9 @@
 import { Context } from "hono";
-import { Blog } from "./newBlog";
 import { PrismaClient } from "../generated/prisma/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { HTTPStatusCode } from "../statusCodes";
+import { updatePostSchema, UpdatePostType } from "@100xbensomnitrix/medium-common-bundle";
 
-type UpdateParams = Partial<Pick<Blog, 'title' | 'content'>>;
 
 export const updateBlog = async (c: Context) => {
     try{
@@ -13,9 +12,16 @@ export const updateBlog = async (c: Context) => {
         }).$extends(withAccelerate());
         const id = c.get("jwtPayload").id;
         const postId = c.req.param("id");
-        const data: UpdateParams = await c.req.json();
+        const data: UpdatePostType = await c.req.json();
 
-        if(!data.title && !data.content){
+        const updateParams = updatePostSchema.safeParse(data);
+        if(!updateParams.success){
+            return c.json({
+                message: updateParams.error.flatten()
+            },HTTPStatusCode.BAD_REQUEST)
+        }
+
+        if(!updateParams.data.title && !updateParams.data.content){
             return c.json({
                 message: "No fields to update"
             },HTTPStatusCode.BAD_REQUEST)
@@ -26,7 +32,7 @@ export const updateBlog = async (c: Context) => {
                 id: postId,
                 authorId: id
             },
-            data: {...data},
+            data: {...updateParams.data},
             select:{
                 id: true
             }

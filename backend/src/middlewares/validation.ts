@@ -1,6 +1,6 @@
 import { Context, Next } from "hono";
-import { signinSchema, SigninType, signupSchema, SignupType } from "../validationSchema";
 import { HTTPStatusCode } from "../statusCodes";
+import { signinSchema, SigninType, signupSchema, SignupType } from "@100xbensomnitrix/medium-common-bundle";
 
 export const signupValidation = async (c: Context, next: Next) => {
     try{
